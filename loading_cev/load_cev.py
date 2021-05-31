@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 def loading_cev(file_path):
     with open(f'{file_path}') as f:
         lines = f.readlines()
@@ -32,18 +33,39 @@ def loading_cev(file_path):
     array_dados = array_dados.T
 
     fim_analogicos = np.where(array_dados == ' ')
+    lista_array_analogicos = []
+    trig_counter = 0
+    for i in keys_dados_analogicos:
+        if i == 'TRIG':
+            break
+        trig_counter += 1
 
-    lista_array = []
-    for i in range(0, fim_analogicos[0][0]):
-        array_dadod_float = array_dados[i].astype(np.float32)
-        lista_array.append(array_dadod_float)
-    dict_dados_analogicos = dict(zip(keys_dados_analogicos, lista_array))
+    for i in range(0, trig_counter):
+        array_dados_float_analogicos = array_dados[i].astype(np.float32)
+        lista_array_analogicos.append(array_dados_float_analogicos)
+
+    indice_aster = np.where(array_dados[trig_counter] == '"*"')
+    indice_maior = np.where(array_dados[trig_counter] == '">"')
+
+    if indice_maior:
+        trig = indice_maior[0]
+    else:
+        if indice_aster:
+            trig = indice_aster[0]
+        else:
+            trig = 0
+
+    lista_array_analogicos.append(trig)
+
+    dict_dados_analogicos = dict(zip(keys_dados_analogicos, lista_array_analogicos))
 
     return dict_dados_analogicos, dict_info_geral
 
 
 if __name__ == '__main__':
 
-    canais_analogicos, informacoes = loading_cev(r'C:\Users\Helena\PycharmProjects\loadingcev\oscilografias\CEV_S128_R_L60_10154.CEV')
-    plt.plot(canais_analogicos['IN'])
+    canais_analogicos, informacoes = loading_cev(r'C:\Users\Helena\PycharmProjects\loadingcev\oscilografias\CEV_10377_R.CEV')
+    print(canais_analogicos.keys())
+    print(canais_analogicos['TRIG'])
+    plt.plot(canais_analogicos['IN(A)'])
     plt.show()
