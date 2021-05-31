@@ -1,3 +1,5 @@
+import datetime
+
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -7,9 +9,14 @@ def loading_cev(file_path):
         lines = f.readlines()
         nomes_canais = lines[6].split(',')
         nomes_geral = lines[4].split(',')
+        nomes_data = lines[2].split(',')
 
         keys_dados_analogicos = []
+        keys_data = []
         keys_geral = []
+
+    for nomes in nomes_data:
+        keys_data.append(nomes.replace('"', ""))
 
     for nomes in nomes_canais:
         keys_dados_analogicos.append(nomes.replace('"', ""))
@@ -18,6 +25,9 @@ def loading_cev(file_path):
         keys_geral.append(nomes.replace('"', ""))
 
     dict_info_geral = dict(zip(keys_geral, lines[5].split(',')))
+    dict_time = dict(zip(keys_data, lines[3].split(',')))
+    dia = datetime.datetime(int(dict_time['YEAR']), int(dict_time['MONTH']), int(dict_time['DAY']), int(dict_time['HOUR']), int(dict_time['MIN']), int(dict_time['SEC']), int(dict_time['MSEC']))
+
     count = 0
     dados = []
     for line in lines:
